@@ -4,6 +4,7 @@
 import click
 import boto3
 import re
+import json
 
 CTX_SILENT_MODE = 'silent'
 CTX_DEBUG_MODE = 'debug'
@@ -25,6 +26,23 @@ def cli(ctx, silent, debug):
     ctx.obj[CTX_DEBUG_MODE] = debug
     click.echo('Silent mode is %s' % (is_silent(ctx) and 'on' or 'off'))
     click.echo('Debug mode is %s' % (is_silent(ctx) and 'on' or 'off'))
+
+@cli.command(context_settings=CONTEXT_SETTINGS)
+@click.pass_context
+@click.argument('profile')
+def list_groups(ctx, profile):
+    """List possible AWS IAM groups"""
+
+    session = boto3.Session(profile_name=profile)
+    client = session.client('iam')
+
+    click.echo("Using profile: {0}".format(profile))
+
+    response = client.list_groups()
+
+    click.echo(click.style("\n....Group Names....", bold=True))
+    for i in response['Groups']:
+        click.echo(i['GroupName'])
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.pass_context
