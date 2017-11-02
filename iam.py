@@ -3,6 +3,7 @@
 
 import click
 import boto3
+import sys
 import re
 import json
 
